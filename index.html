@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Aman Vishwakarma’s Best-Friend Match Quiz with Skip & Enhanced</title>
+<title>Aman Vishwakarma’s Best-Friend Match Quiz</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
   :root {
     --bg-start:#3b82f6;
@@ -14,8 +15,12 @@
     --accent:#38bdf8;
     --accent-dark:#0ea5e9;
     --border:#334155;
+    --correct:#10b981;
+    --incorrect:#ef4444;
+    --skipped:#f59e0b;
+    --transition: all 0.3s ease;
   }
-  * { box-sizing: border-box; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
     margin:0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -25,7 +30,8 @@
     display: flex;
     justify-content:center;
     align-items:flex-start;
-    padding:12px;
+    padding:20px 12px;
+    line-height: 1.6;
   }
   .container {
     max-width:700px;
@@ -33,24 +39,55 @@
     background: var(--card-bg);
     border-radius: 18px;
     box-shadow: 0 12px 32px rgba(0,0,0,0.5);
-    padding: 24px 32px 36px;
+    padding: 28px 32px;
     margin-top: 24px;
     user-select: none;
+    position: relative;
+    overflow: hidden;
+  }
+  .decoration {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 120px;
+    height: 120px;
+    background: linear-gradient(45deg, var(--accent), transparent);
+    border-radius: 0 18px 0 100px;
+    opacity: 0.7;
+    z-index: 0;
+  }
+  .content {
+    position: relative;
+    z-index: 1;
   }
   h1,h2 {
-    margin: 0 0 12px 0;
+    margin: 0 0 16px 0;
     text-align: center;
     font-weight: 700;
     letter-spacing: 1px;
   }
-  h1 { font-size: 26px; }
-  h2 { font-size: 20px; margin-bottom: 24px; color: var(--accent-dark); }
+  h1 { 
+    font-size: 28px; 
+    background: linear-gradient(45deg, #4ade80, #22d3ee);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    padding: 10px;
+  }
+  h2 { 
+    font-size: 22px; 
+    margin-bottom: 24px; 
+    color: var(--accent);
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  }
   .welcome {
     font-weight: 600;
     font-size: 18px;
     text-align: center;
     margin-bottom: 28px;
     color: var(--text-muted);
+    line-height: 1.5;
+    padding: 0 10px;
   }
   label {
     display: block;
@@ -61,72 +98,158 @@
   }
   input[type=text] {
     width: 100%;
-    padding: 10px 14px;
+    padding: 14px 18px;
     font-size: 16px;
-    border-radius: 10px;
+    border-radius: 12px;
     border: 2px solid var(--border);
     background: #273549;
     color: var(--text-light);
     outline: none;
     box-sizing: border-box;
+    transition: var(--transition);
+    margin-bottom: 10px;
   }
   input[type=text]:focus {
     border-color: var(--accent);
-    box-shadow: 0 0 8px var(--accent);
+    box-shadow: 0 0 12px var(--accent);
+    transform: translateY(-2px);
   }
   button {
-    margin-top: 20px;
     width: 100%;
     background: var(--accent);
     border: none;
-    padding: 14px 0;
+    padding: 16px 0;
     border-radius: 14px;
     font-weight: 700;
     font-size: 18px;
     color: var(--card-bg);
     cursor: pointer;
-    transition: background-color 0.25s ease;
+    transition: var(--transition);
     user-select: none;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+  button::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 5px;
+    height: 5px;
+    background: rgba(255, 255, 255, 0.5);
+    opacity: 0;
+    border-radius: 100%;
+    transform: scale(1, 1) translate(-50%);
+    transform-origin: 50% 50%;
   }
   button:hover:not(:disabled) {
     background: var(--accent-dark);
     color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+  }
+  button:active:not(:disabled)::after {
+    animation: ripple 1s ease-out;
   }
   button:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+    transform: none !important;
+  }
+  @keyframes ripple {
+    0% {
+      transform: scale(0, 0);
+      opacity: 0.5;
+    }
+    20% {
+      transform: scale(25, 25);
+      opacity: 0.3;
+    }
+    100% {
+      opacity: 0;
+      transform: scale(40, 40);
+    }
+  }
+  .progress-container {
+    margin: 24px 0 28px;
+  }
+  .progress-text {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: var(--text-muted);
   }
   .progress-bar {
     height: 16px;
     background: var(--border);
     border-radius: 18px;
     overflow: hidden;
-    margin: 24px 0 28px;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
   }
   .bar-fill {
     height: 100%;
     width: 0;
     background: linear-gradient(90deg, #34d399, #06b6d4);
-    transition: width 0.3s ease;
+    transition: width 0.5s ease;
+    border-radius: 18px;
+    position: relative;
+    overflow: hidden;
+  }
+  .bar-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background-image: linear-gradient(
+      -45deg,
+      rgba(255, 255, 255, 0.2) 25%,
+      transparent 25%,
+      transparent 50%,
+      rgba(255, 255, 255, 0.2) 50%,
+      rgba(255, 255, 255, 0.2) 75%,
+      transparent 75%,
+      transparent
+    );
+    z-index: 1;
+    background-size: 20px 20px;
+    animation: move 1s linear infinite;
     border-radius: 18px;
   }
+  @keyframes move {
+    0% {
+      background-position: 0 0;
+    }
+    100% {
+      background-position: 20px 0;
+    }
+  }
   .question {
-    margin-bottom: 12px;
+    margin-bottom: 20px;
     font-size: 20px;
     font-weight: 600;
-    line-height: 1.3;
+    line-height: 1.4;
     letter-spacing: 0.5px;
     user-select: text;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--border);
+    text-align: center;
   }
   .options {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
     gap: 16px;
-    margin-bottom: 12px;
+    margin-bottom: 20px;
   }
   .option {
     background: #334155;
-    padding: 14px 18px;
+    padding: 16px 12px;
     border-radius: 14px;
     font-size: 16px;
     font-weight: 600;
@@ -134,19 +257,41 @@
     text-align: center;
     cursor: pointer;
     user-select: none;
-    transition: background-color 0.2s ease, transform 0.15s ease;
+    transition: var(--transition);
     border: 2px solid transparent;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 90px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
   }
   .option:hover {
-    background: #1e293b;
+    background: #475569;
     border-color: var(--accent);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
   }
   .option.selected {
     background: var(--accent);
-    border-color: #22c55e;
+    border-color: var(--correct);
     color: var(--card-bg);
-    transform: scale(1.05);
-    box-shadow: 0 0 15px #22c55eaa;
+    transform: scale(1.03);
+    box-shadow: 0 0 20px var(--correct);
+  }
+  .option-letter {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background: rgba(0,0,0,0.2);
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: bold;
   }
   .actions {
     display: flex;
@@ -156,22 +301,24 @@
     margin-bottom: 12px;
   }
   .actions button {
+    margin-top: 0;
     flex-grow: 1;
-    max-width: 140px;
+    max-width: calc(50% - 6px);
   }
   .skip-btn {
     background: transparent;
     border: 2px solid var(--accent);
     color: var(--accent);
     font-weight: 700;
-    padding: 12px 0;
+    padding: 14px 0;
     border-radius: 12px;
     cursor: pointer;
-    transition: background-color 0.25s ease;
+    transition: var(--transition);
   }
   .skip-btn:hover {
     background-color: var(--accent);
     color: var(--card-bg);
+    transform: translateY(-2px);
   }
   .result-screen {
     text-align: center;
@@ -191,6 +338,18 @@
     -webkit-text-fill-color: transparent;
     animation: pulse 2.5s infinite;
     letter-spacing: 1.5px;
+    position: relative;
+    display: inline-block;
+  }
+  .result-percent::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 10%;
+    width: 80%;
+    height: 8px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    border-radius: 4px;
   }
   @keyframes pulse {
     0%, 100% {text-shadow: 0 0 20px #22d3eea0, 0 0 30px #4ade8080;}
@@ -205,7 +364,7 @@
   }
   .badge {
     background: linear-gradient(90deg, #2563eb, #22b6f0);
-    padding: 8px 20px;
+    padding: 10px 22px;
     border-radius: 100px;
     font-weight: 800;
     font-size: 18px;
@@ -214,11 +373,12 @@
     text-shadow: 0 0 5px #094A8F;
     color: white;
     letter-spacing: 0.7px;
-    transition: background-color 0.3s ease;
+    transition: var(--transition);
   }
   .badge:hover {
     background: linear-gradient(90deg, #34d399, #10b981);
     box-shadow: 0 0 22px #10b981cc;
+    transform: translateY(-3px);
   }
   .review-list {
     margin-top: 20px;
@@ -238,28 +398,77 @@
   }
   .review-q {
     font-weight: 700;
-    margin: 0 0 2px 0;
+    margin: 0 0 6px 0;
+    color: var(--text-light);
   }
   .review-ans {
     margin: 0;
     display: flex;
+    flex-wrap: wrap;
     gap: 12px;
-    flex-wrap: nowrap;
     font-size: 14px;
     align-items: center;
   }
   .review-val {
     font-weight: 600;
-    padding: 4px 8px;
+    padding: 6px 14px;
     border-radius: 9999px;
     background: var(--accent);
     color: var(--card-bg);
     user-select: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .review-val.correct {
+    background: var(--correct);
+  }
+  .review-val.incorrect {
+    background: var(--incorrect);
+  }
+  .review-val.skipped {
+    background: var(--skipped);
   }
   .review-mark {
     font-size: 18px;
     user-select: none;
     flex-grow: 0;
+  }
+  .result-actions {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-top: 24px;
+  }
+  .result-actions button {
+    margin-top: 0;
+    flex: 1;
+    min-width: 140px;
+    max-width: 200px;
+  }
+  .review-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+  }
+  .floating-info {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: rgba(0,0,0,0.3);
+    color: var(--text-light);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    z-index: 2;
+  }
+  .floating-info span {
+    font-weight: bold;
+    color: var(--accent);
   }
   .review-list::-webkit-scrollbar {
     width: 8px;
@@ -268,32 +477,156 @@
     background: var(--accent);
     border-radius: 9999px;
   }
-  @media (max-width:480px) {
+  .confirmation-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: var(--transition);
+  }
+  .confirmation-modal.active {
+    opacity: 1;
+    visibility: visible;
+  }
+  .modal-content {
+    background: var(--card-bg);
+    padding: 24px;
+    border-radius: 16px;
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    transform: translateY(-20px);
+    transition: var(--transition);
+  }
+  .confirmation-modal.active .modal-content {
+    transform: translateY(0);
+  }
+  .modal-actions {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 20px;
+  }
+  .modal-actions button {
+    flex: 1;
+    padding: 12px;
+  }
+  .score-display {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 16px;
+    margin: 20px 0;
+    text-align: center;
+  }
+  .score-text {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .score-value {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--accent);
+  }
+  @media (max-width: 600px) {
+    .container {
+      padding: 20px 20px 30px;
+    }
+    h1 {
+      font-size: 24px;
+    }
+    h2 {
+      font-size: 20px;
+    }
     .options {
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+    .option {
+      min-height: 70px;
+      padding: 12px 12px 12px 40px;
+      text-align: left;
     }
     .result-percent {
-      font-size: 56px;
+      font-size: 70px;
+    }
+    .actions {
+      flex-direction: column;
+    }
+    .actions button {
+      max-width: 100%;
+    }
+    .result-actions {
+      flex-direction: column;
+      align-items: center;
+    }
+    .result-actions button {
+      max-width: 100%;
+    }
+    .badges {
+      flex-direction: column;
+      align-items: center;
     }
   }
 </style>
 </head>
 <body>
   <div class="container" id="app">
-    <h1>Aman Vishwakarma’s Best-Friend Match Quiz</h1>
-    <p class="welcome" id="welcomeTxt">Apna naam daalein shuru karne ke liye:</p>
-    <label for="userNameInput" id="nameLabel" style="display:block">Aapka Naam:</label>
-    <input type="text" id="userNameInput" autocomplete="off" placeholder="Apna naam yahaan likhein" />
-    <button id="startBtn" disabled>Quiz Start Karein</button>
+    <div class="decoration"></div>
+    <div class="content">
+      <h1>Aman Vishwakarma’s Best-Friend Match Quiz</h1>
+      <p class="welcome" id="welcomeTxt">Apna naam daalein shuru karne ke liye:</p>
+      <label for="userNameInput" id="nameLabel" style="display:block">Aapka Naam:</label>
+      <input type="text" id="userNameInput" autocomplete="off" placeholder="Apna naam yahaan likhein" />
+      <button id="startBtn" disabled><i class="fas fa-play"></i> Quiz Start Karein</button>
 
-    <div class="progress-bar" style="display:none">
-      <div class="bar-fill" id="progressBar"></div>
+      <div class="progress-container" style="display:none">
+        <div class="progress-text">
+          <span id="progressText">Progress: 0/21</span>
+          <span id="timer">00:00</span>
+        </div>
+        <div class="progress-bar">
+          <div class="bar-fill" id="progressBar"></div>
+        </div>
+      </div>
+
+      <div id="quizScreen" style="display:none"></div>
     </div>
-
-    <div id="quizScreen" style="display:none"></div>
   </div>
+
+  <div class="confirmation-modal" id="skipModal">
+    <div class="modal-content">
+      <h3>Skip Question?</h3>
+      <p>Kya aap sach me is sawaal ko skip karna chahte hain?</p>
+      <div class="modal-actions">
+        <button class="skip-btn" id="confirmSkip"><i class="fas fa-forward"></i> Skip</button>
+        <button id="cancelSkip"><i class="fas fa-times"></i> Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="confirmation-modal" id="restartModal">
+    <div class="modal-content">
+      <h3>Restart Quiz?</h3>
+      <p>Kya aap sach me quiz restart karna chahte hain? Aapke answers delete ho jaayenge.</p>
+      <div class="modal-actions">
+        <button id="confirmRestart"><i class="fas fa-redo"></i> Restart</button>
+        <button class="skip-btn" id="cancelRestart"><i class="fas fa-times"></i> Cancel</button>
+      </div>
+    </div>
+  </div>
+
 <script>
-// Sounds inline base64 - clear tones for feedback
+// Enhanced sounds
 const sounds = {
   select: "data:audio/wav;base64,UklGRuQAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YYQAAABcAgADAwQDAAMDAwMDBAQEBAQEBAQEBAMEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBB/8ZFREGVlRXVlZWVlZWVlZWVlZWVlZWVlZWTv///w==",
   next: "data:audio/wav;base64,UklGRngAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQAAAAAAAP///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
@@ -307,7 +640,7 @@ function playSound(name){
   setTimeout(() => {
     try {
       const audio = new Audio(sounds[name]);
-      audio.volume = 0.45;
+      audio.volume = 0.3;
       audio.play().catch(() => {});
     } catch (err) {}
   }, 40);
@@ -341,17 +674,29 @@ const ownerKey = [0,0,1,3,1,3,1,0,1,2,1,0,3,3,2,1,0,2,0,3,0];
 let idx = 0;
 const answers = Array(questions.length).fill(null);
 let userName = '';
+let startTime = null;
+let timerInterval = null;
+
 const welcomeTxt = document.getElementById('welcomeTxt');
 const nameLabel = document.getElementById('nameLabel');
 const userNameInput = document.getElementById('userNameInput');
 const startBtn = document.getElementById('startBtn');
-const progressBar = document.querySelector('.progress-bar');
+const progressContainer = document.querySelector('.progress-container');
+const progressText = document.getElementById('progressText');
+const timerElement = document.getElementById('timer');
 const barFill = document.getElementById('progressBar');
 const quizScreen = document.getElementById('quizScreen');
+const skipModal = document.getElementById('skipModal');
+const confirmSkip = document.getElementById('confirmSkip');
+const cancelSkip = document.getElementById('cancelSkip');
+const restartModal = document.getElementById('restartModal');
+const confirmRestart = document.getElementById('confirmRestart');
+const cancelRestart = document.getElementById('cancelRestart');
 
 userNameInput.addEventListener('input', () => {
   startBtn.disabled = !userNameInput.value.trim();
 });
+
 startBtn.addEventListener('click', () => {
   userName = userNameInput.value.trim();
   if(!userName) return;
@@ -361,19 +706,38 @@ startBtn.addEventListener('click', () => {
   userNameInput.style.display = 'none';
   startBtn.style.display = 'none';
 
-  progressBar.style.display = 'block';
+  progressContainer.style.display = 'block';
   quizScreen.style.display = 'block';
+  
+  // Start timer
+  startTime = new Date();
+  updateTimer();
+  timerInterval = setInterval(updateTimer, 1000);
 
   render();
 });
+
+function updateTimer() {
+  if (!startTime) return;
+  
+  const now = new Date();
+  const diff = Math.floor((now - startTime) / 1000);
+  const minutes = Math.floor(diff / 60);
+  const seconds = diff % 60;
+  
+  timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+}
+
 function render(){
-  // Calculate how many questions attempted (non-null) out of total
+  // Update progress text
   const answeredCount = answers.filter(a => a !== null).length;
+  progressText.textContent = `Progress: ${answeredCount}/${questions.length}`;
   const progressPercent = (answeredCount / questions.length) * 100;
   barFill.style.width = progressPercent + '%';
 
   if(idx >= questions.length){
     playSound('result');
+    clearInterval(timerInterval);
     showResult();
     return;
   }
@@ -383,13 +747,16 @@ function render(){
     <div class="question">Q${idx+1}. ${q.q}</div>
     <div class="options">
       ${q.o.map((opt,i)=>`
-        <div class="option ${answers[idx]===i?'selected':''}" data-idx="${i}">${String.fromCharCode(65+i)}. ${opt}</div>
+        <div class="option ${answers[idx]===i?'selected':''}" data-idx="${i}">
+          <span class="option-letter">${String.fromCharCode(65+i)}</span>
+          ${opt}
+        </div>
       `).join('')}
     </div>
-    <div class="actions" style="flex-wrap:wrap;">
-      <button class="ghost" id="prevBtn" ${idx===0?'disabled':''}>Back</button>
-      <button id="skipBtn" class="skip-btn">Skip</button>
-      <button id="nextBtn" disabled>Next</button>
+    <div class="actions">
+      <button id="prevBtn" ${idx===0?'disabled':''}><i class="fas fa-arrow-left"></i> Back</button>
+      <button id="skipBtn" class="skip-btn"><i class="fas fa-forward"></i> Skip</button>
+      <button id="nextBtn" disabled>Next <i class="fas fa-arrow-right"></i></button>
     </div>
   `;
 
@@ -416,12 +783,19 @@ function render(){
   });
 
   skipBtn.addEventListener('click', () => {
-    if(confirm("Kya aap sach me is sawaal ko skip karna chahte hain?")){
-      playSound('skip');
-      answers[idx] = null;
-      idx++;
-      render();
-    }
+    skipModal.classList.add('active');
+  });
+
+  confirmSkip.addEventListener('click', () => {
+    playSound('skip');
+    answers[idx] = null;
+    idx++;
+    skipModal.classList.remove('active');
+    render();
+  });
+
+  cancelSkip.addEventListener('click', () => {
+    skipModal.classList.remove('active');
   });
 
   nextBtn.addEventListener('click', () => {
@@ -439,21 +813,9 @@ function render(){
     }
   }
 }
+
 function showResult(){
-  const answered = answers.filter(a=>a!==null);
-  let matches = 0;
-  answered.forEach((a,i)=>{
-    if(a === ownerKey[answers.indexOf(a)]) matches++;
-  });
-  // Better counting: loop by index to handle repeat answers properly
-  matches = 0;
-  for(let i=0; i<questions.length; i++){
-    const userAns = answers[i];
-    if(userAns !== null && userAns === ownerKey[i]) matches++;
-  }
-  const answeredCount = answered.length;
-  const totalQs = questions.length;
-  const percent = answeredCount === 0 ? 0 : Math.round((matches / answeredCount) * 100);
+  const {percent, matches, answeredCount} = computeResult();
   let badge = "Unique Mix";
   if(percent >= 80 && answeredCount > 0) badge = "Perfect Sync";
   else if(percent >= 60 && answeredCount > 0) badge = "Strong Match";
@@ -464,45 +826,75 @@ function showResult(){
       <h2>Namaste ${userName}!</h2>
       <p>Aman Vishwakarma ke saath aapka Best-Friend Match Score hai:</p>
       <div class="result-percent" role="heading" aria-level="1">${percent}%</div>
+      
+      <div class="score-display">
+        <div class="score-text">Aapke ${answeredCount} sawaalon mein se</div>
+        <div class="score-value">${matches} sawaal theek the!</div>
+      </div>
+      
       <div class="badges" role="list">
         <div class="badge" role="listitem" tabindex="0">${badge}</div>
-        <div class="badge" role="listitem" tabindex="0">${matches} answers matched from ${answeredCount} answered questions</div>
       </div>
-      <div class="actions" style="justify-content:center; gap:12px; flex-wrap:wrap; margin-top:24px;">
-        <button onclick="shareResult(${percent},${matches})">Share Result</button>
-        <button class="ghost" onclick="showReview()">Review Answers</button>
-        <button onclick="restart()">Restart Quiz</button>
+      
+      <div class="result-actions">
+        <button onclick="shareResult(${percent},${matches},${answeredCount})"><i class="fas fa-share"></i> Share Result</button>
+        <button onclick="showReview()"><i class="fas fa-list"></i> Review Answers</button>
+        <button onclick="showRestartConfirm()"><i class="fas fa-redo"></i> Restart Quiz</button>
       </div>
     </div>
   `;
-  progressBar.style.display = 'none';
+  progressContainer.style.display = 'none';
 }
 
 function showReview(){
-  const {percent, matches} = computeResult();
-  let html = `<h2>${userName} ka Quiz Review</h2><p>Score: ${percent}% (${matches}/21 matches)</p>`;
-  html += '<div class="review-list">';
+  const {percent, matches, answeredCount} = computeResult();
+  let html = `
+    <h2>${userName} ka Quiz Review</h2>
+    
+    <div class="score-display">
+      <div class="score-text">Aapka Score:</div>
+      <div class="score-value">${percent}% (${matches}/${answeredCount})</div>
+      <div class="score-text">Total Time: ${timerElement.textContent}</div>
+    </div>
+    
+    <div class="review-list">
+  `;
   for(let i=0;i<questions.length;i++){
     const sel = answers[i];
     const ok = ownerKey[i];
-    const mark = (sel === ok) ? "✅" : (sel === null ? "—" : "❌");
+    let mark, status, statusClass;
+    
+    if (sel === null) {
+      mark = "—";
+      status = "Skipped";
+      statusClass = "skipped";
+    } else if (sel === ok) {
+      mark = "✓";
+      status = "Correct";
+      statusClass = "correct";
+    } else {
+      mark = "✗";
+      status = "Incorrect";
+      statusClass = "incorrect";
+    }
+    
     const selTxt = sel === null ? "Skipped" : `${String.fromCharCode(65+sel)}. ${questions[i].o[sel]}`;
     const okTxt = `${String.fromCharCode(65+ok)}. ${questions[i].o[ok]}`;
     html += `
       <div class="review-item">
         <div class="review-q">Q${i+1}. ${questions[i].q}</div>
         <div class="review-ans">
-          <span class="review-mark">${mark}</span>
-          <span class="review-val">Aapka: ${selTxt}</span>
-          <span class="review-val">Aman Vishwakarma: ${okTxt}</span>
+          <span class="review-val ${statusClass}"><span class="review-mark">${mark}</span> ${status}: ${selTxt}</span>
+          <span class="review-val">Aman: ${okTxt}</span>
         </div>
       </div>
     `;
   }
-  html += '</div><div style="text-align:center; margin-top:12px;"><button onclick="renderResult()">Back to Result</button></div>';
+  html += '</div><div class="review-actions"><button onclick="renderResult()"><i class="fas fa-arrow-left"></i> Back to Result</button></div>';
   quizScreen.innerHTML = html;
-  progressBar.style.display = 'none';
+  progressContainer.style.display = 'none';
 }
+
 function computeResult() {
   let matches = 0;
   let answeredCount = 0;
@@ -515,25 +907,46 @@ function computeResult() {
   const percent = answeredCount === 0 ? 0 : Math.round((matches / answeredCount) * 100);
   return {percent, matches, answeredCount};
 }
+
 function renderResult(){
-  progressBar.style.display = 'none';
+  progressContainer.style.display = 'none';
   showResult();
 }
+
+function showRestartConfirm() {
+  restartModal.classList.add('active');
+}
+
+confirmRestart.addEventListener('click', () => {
+  restartModal.classList.remove('active');
+  restart();
+});
+
+cancelRestart.addEventListener('click', () => {
+  restartModal.classList.remove('active');
+});
+
 function restart() {
   idx = 0;
   answers.fill(null);
   userNameInput.value = '';
   userName = '';
   quizScreen.style.display = 'none';
-  progressBar.style.display = 'none';
+  progressContainer.style.display = 'none';
   welcomeTxt.style.display = 'block';
   nameLabel.style.display = 'block';
   userNameInput.style.display = 'block';
   startBtn.style.display = 'block';
   startBtn.disabled = true;
+  
+  // Reset timer
+  clearInterval(timerInterval);
+  timerElement.textContent = '00:00';
+  startTime = null;
 }
-async function shareResult(percent, matches){
-  const text = `${userName} ka Aman Vishwakarma ke saath Best-Friend Match: ${percent}% (${matches} correct answers), from answered questions!`;
+
+async function shareResult(percent, matches, answeredCount){
+  const text = `${userName} ka Aman Vishwakarma ke saath Best-Friend Match: ${percent}% (${matches} correct answers out of ${answeredCount} answered)!`;
   if(navigator.share){
     try{
       await navigator.share({title:"Best-Friend Match Result", text});
@@ -547,6 +960,7 @@ async function shareResult(percent, matches){
     prompt("Copy your result:", text);
   }
 }
+
 userNameInput.focus();
 </script>
 </body>
