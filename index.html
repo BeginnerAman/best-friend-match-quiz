@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Aman Vishwakarma’s Best-Friend Match Quiz with Skip & Enhanced</title>
+<style>
+  :root {
+    --bg-start:#3b82f6;
+    --bg-end:#2563eb;
+    --card-bg:#1e293b;
+    --text-light:#f8fafc;
+    --text-muted:#94a3b8;
+    --accent:#38bdf8;
+    --accent-dark:#0ea5e9;
+    --border:#334155;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin:0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(120deg, var(--bg-start), var(--bg-end));
+    color: var(--text-light);
+    min-height: 100vh;
+    display: flex;
+    justify-content:center;
+    align-items:flex-start;
+    padding:12px;
+  }
+  .container {
+    max-width:700px;
+    width:100%;
+    background: var(--card-bg);
+    border-radius: 18px;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.5);
+    padding: 24px 32px 36px;
+    margin-top: 24px;
+    user-select: none;
+  }
+  h1,h2 {
+    margin: 0 0 12px 0;
+    text-align: center;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+  h1 { font-size: 26px; }
+  h2 { font-size: 20px; margin-bottom: 24px; color: var(--accent-dark); }
+  .welcome {
+    font-weight: 600;
+    font-size: 18px;
+    text-align: center;
+    margin-bottom: 28px;
+    color: var(--text-muted);
+  }
+  label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-light);
+  }
+  input[type=text] {
+    width: 100%;
+    padding: 10px 14px;
+    font-size: 16px;
+    border-radius: 10px;
+    border: 2px solid var(--border);
+    background: #273549;
+    color: var(--text-light);
+    outline: none;
+    box-sizing: border-box;
+  }
+  input[type=text]:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+  }
+  button {
+    margin-top: 20px;
+    width: 100%;
+    background: var(--accent);
+    border: none;
+    padding: 14px 0;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 18px;
+    color: var(--card-bg);
+    cursor: pointer;
+    transition: background-color 0.25s ease;
+    user-select: none;
+  }
+  button:hover:not(:disabled) {
+    background: var(--accent-dark);
+    color: white;
+  }
+  button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  .progress-bar {
+    height: 16px;
+    background: var(--border);
+    border-radius: 18px;
+    overflow: hidden;
+    margin: 24px 0 28px;
+  }
+  .bar-fill {
+    height: 100%;
+    width: 0;
+    background: linear-gradient(90deg, #34d399, #06b6d4);
+    transition: width 0.3s ease;
+    border-radius: 18px;
+  }
+  .question {
+    margin-bottom: 12px;
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: 0.5px;
+    user-select: text;
+  }
+  .options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 16px;
+    margin-bottom: 12px;
+  }
+  .option {
+    background: #334155;
+    padding: 14px 18px;
+    border-radius: 14px;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-light);
+    text-align: center;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.2s ease, transform 0.15s ease;
+    border: 2px solid transparent;
+  }
+  .option:hover {
+    background: #1e293b;
+    border-color: var(--accent);
+  }
+  .option.selected {
+    background: var(--accent);
+    border-color: #22c55e;
+    color: var(--card-bg);
+    transform: scale(1.05);
+    box-shadow: 0 0 15px #22c55eaa;
+  }
+  .actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+  .actions button {
+    flex-grow: 1;
+    max-width: 140px;
+  }
+  .skip-btn {
+    background: transparent;
+    border: 2px solid var(--accent);
+    color: var(--accent);
+    font-weight: 700;
+    padding: 12px 0;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background-color 0.25s ease;
+  }
+  .skip-btn:hover {
+    background-color: var(--accent);
+    color: var(--card-bg);
+  }
+  .result-screen {
+    text-align: center;
+    user-select: text;
+    animation: fadeInSlide 0.8s ease forwards;
+  }
+  @keyframes fadeInSlide {
+    0% {opacity: 0; transform: translateY(15px);}
+    100% {opacity: 1; transform: translateY(0);}
+  }
+  .result-percent {
+    font-weight: 900;
+    font-size: 90px;
+    margin: 8px 0 16px;
+    background: linear-gradient(45deg, #4ade80, #22d3ee);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: pulse 2.5s infinite;
+    letter-spacing: 1.5px;
+  }
+  @keyframes pulse {
+    0%, 100% {text-shadow: 0 0 20px #22d3eea0, 0 0 30px #4ade8080;}
+    50% {text-shadow: 0 0 40px #22d3ee, 0 0 50px #4ade80;}
+  }
+  .badges {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+  .badge {
+    background: linear-gradient(90deg, #2563eb, #22b6f0);
+    padding: 8px 20px;
+    border-radius: 100px;
+    font-weight: 800;
+    font-size: 18px;
+    user-select: none;
+    box-shadow: 0 0 16px #22b6f0aa;
+    text-shadow: 0 0 5px #094A8F;
+    color: white;
+    letter-spacing: 0.7px;
+    transition: background-color 0.3s ease;
+  }
+  .badge:hover {
+    background: linear-gradient(90deg, #34d399, #10b981);
+    box-shadow: 0 0 22px #10b981cc;
+  }
+  .review-list {
+    margin-top: 20px;
+    max-height: 280px;
+    overflow-y: auto;
+    border-top: 1px solid var(--border);
+    padding-top: 12px;
+    text-align: left;
+    user-select: text;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+  .review-item {
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .review-q {
+    font-weight: 700;
+    margin: 0 0 2px 0;
+  }
+  .review-ans {
+    margin: 0;
+    display: flex;
+    gap: 12px;
+    flex-wrap: nowrap;
+    font-size: 14px;
+    align-items: center;
+  }
+  .review-val {
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 9999px;
+    background: var(--accent);
+    color: var(--card-bg);
+    user-select: none;
+  }
+  .review-mark {
+    font-size: 18px;
+    user-select: none;
+    flex-grow: 0;
+  }
+  .review-list::-webkit-scrollbar {
+    width: 8px;
+  }
+  .review-list::-webkit-scrollbar-thumb {
+    background: var(--accent);
+    border-radius: 9999px;
+  }
+  @media (max-width:480px) {
+    .options {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .result-percent {
+      font-size: 56px;
+    }
+  }
+</style>
+</head>
+<body>
+  <div class="container" id="app">
+    <h1>Aman Vishwakarma’s Best-Friend Match Quiz</h1>
+    <p class="welcome" id="welcomeTxt">Apna naam daalein shuru karne ke liye:</p>
+    <label for="userNameInput" id="nameLabel" style="display:block">Aapka Naam:</label>
+    <input type="text" id="userNameInput" autocomplete="off" placeholder="Apna naam yahaan likhein" />
+    <button id="startBtn" disabled>Quiz Start Karein</button>
+
+    <div class="progress-bar" style="display:none">
+      <div class="bar-fill" id="progressBar"></div>
+    </div>
+
+    <div id="quizScreen" style="display:none"></div>
+  </div>
+<script>
+// Sounds inline base64 - clear tones for feedback
+const sounds = {
+  select: "data:audio/wav;base64,UklGRuQAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YYQAAABcAgADAwQDAAMDAwMDBAQEBAQEBAQEBAMEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBB/8ZFREGVlRXVlZWVlZWVlZWVlZWVlZWVlZWTv///w==",
+  next: "data:audio/wav;base64,UklGRngAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQAAAAAAAP///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+  back: "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0AAAA//8=",
+  skip: "data:audio/wav;base64,UklGRjwAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YAABAAABAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEB",
+  result: "data:audio/wav;base64,UklGRlIAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0AUAAAACwAABgAADQAADUAAD8AADwAADwAAD8AAD4AAA4AAA4AAA4AAA8AAA8AAA0AAA0AAA0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=="
+};
+
+function playSound(name){
+  if(!window.Audio) return;
+  setTimeout(() => {
+    try {
+      const audio = new Audio(sounds[name]);
+      audio.volume = 0.45;
+      audio.play().catch(() => {});
+    } catch (err) {}
+  }, 40);
+}
+
+const questions = [
+  { q:"Weekend free ho to?", o:["Movie-night at home","Night walk + chai","Gaming + VC","Long sleep + brunch"] },
+  { q:"Daily chai vs coffee?", o:["Sirf chai","Sirf coffee","Dono mood pe","None"] },
+  { q:"Night owl ya early bird?", o:["Early","Night","Both flexible","Only deadlines"] },
+  { q:"Birthday celebrate style?", o:["Close home hangout","Street-food crawl","Mini trip","Solo day"] },
+  { q:"Travel vibe?", o:["Mountains","Beaches","Heritage cities","Staycation"] },
+  { q:"Music choice?", o:["Lo-fi","Bollywood","Punjabi/Hip-hop","Instrumental"] },
+  { q:"Messaging style?", o:["Long voice notes","Short texts","Memes/GIFs","Rare replies"] },
+  { q:"Plan banane ka tareeqa?", o:["Detailed plan","Rough outline","Spontaneous","Friend decides"] },
+  { q:"Food mood?", o:["Desi thali","Biryani","Momos/Maggi","Pizza/Burger"] },
+  { q:"Study/coding partner?", o:["Library silence","Cafe ambient","Home desk","Discord pomodoro"] },
+  { q:"Fitness habit?", o:["Morning run","Evening walk","Home workout","Rest is best"] },
+  { q:"Movies vs series?", o:["Only movies","Only series","Mix, depends","YouTube shorts"] },
+  { q:"Social energy?", o:["Extrovert","Introvert","Ambivert","Depends on crowd"] },
+  { q:"Phone priority?", o:["Camera","Battery","Display","Overall balance"] },
+  { q:"Budget treat?", o:["Kulhad chai","Samosa/jalebi","Momo roll","Cold coffee"] },
+  { q:"Late-night rescue?", o:["Maggie","Parle-G + chai","Leftover pulao","Fruit + milk"] },
+  { q:"Group plan conflict?", o:["Majority wins","Toss/Random","Rotate turns","Skip plan"] },
+  { q:"Celebration snap?", o:["Candid photos","Reels edit","Group selfie","No camera pls"] },
+  { q:"Learning style?", o:["Video courses","Docs/Blogs","Hands-on projects","Notes + spaced rep"] },
+  { q:"Weekend challenge?", o:["10k steps","No phone 3 hr","Build mini app","Clean + reset"] },
+  { q:"Friendship check-in?", o:["Daily small ping","Alternate days","Weekly long call","Only when needed"] },
+];
+const ownerKey = [0,0,1,3,1,3,1,0,1,2,1,0,3,3,2,1,0,2,0,3,0];
+
+let idx = 0;
+const answers = Array(questions.length).fill(null);
+let userName = '';
+const welcomeTxt = document.getElementById('welcomeTxt');
+const nameLabel = document.getElementById('nameLabel');
+const userNameInput = document.getElementById('userNameInput');
+const startBtn = document.getElementById('startBtn');
+const progressBar = document.querySelector('.progress-bar');
+const barFill = document.getElementById('progressBar');
+const quizScreen = document.getElementById('quizScreen');
+
+userNameInput.addEventListener('input', () => {
+  startBtn.disabled = !userNameInput.value.trim();
+});
+startBtn.addEventListener('click', () => {
+  userName = userNameInput.value.trim();
+  if(!userName) return;
+
+  welcomeTxt.style.display = 'none';
+  nameLabel.style.display = 'none';
+  userNameInput.style.display = 'none';
+  startBtn.style.display = 'none';
+
+  progressBar.style.display = 'block';
+  quizScreen.style.display = 'block';
+
+  render();
+});
+function render(){
+  // Calculate how many questions attempted (non-null) out of total
+  const answeredCount = answers.filter(a => a !== null).length;
+  const progressPercent = (answeredCount / questions.length) * 100;
+  barFill.style.width = progressPercent + '%';
+
+  if(idx >= questions.length){
+    playSound('result');
+    showResult();
+    return;
+  }
+
+  const q = questions[idx];
+  quizScreen.innerHTML = `
+    <div class="question">Q${idx+1}. ${q.q}</div>
+    <div class="options">
+      ${q.o.map((opt,i)=>`
+        <div class="option ${answers[idx]===i?'selected':''}" data-idx="${i}">${String.fromCharCode(65+i)}. ${opt}</div>
+      `).join('')}
+    </div>
+    <div class="actions" style="flex-wrap:wrap;">
+      <button class="ghost" id="prevBtn" ${idx===0?'disabled':''}>Back</button>
+      <button id="skipBtn" class="skip-btn">Skip</button>
+      <button id="nextBtn" disabled>Next</button>
+    </div>
+  `;
+
+  const optEls = quizScreen.querySelectorAll('.option');
+  const nextBtn = document.getElementById('nextBtn');
+  const prevBtn = document.getElementById('prevBtn');
+  const skipBtn = document.getElementById('skipBtn');
+
+  optEls.forEach(e => e.addEventListener('click', () => {
+    const i = +e.getAttribute('data-idx');
+    if(answers[idx] !== i) playSound('select');
+    answers[idx] = i;
+    optEls.forEach(el => el.classList.remove('selected'));
+    e.classList.add('selected');
+    nextBtn.disabled = false;
+  }));
+
+  prevBtn.addEventListener('click', () => {
+    if(idx > 0){
+      idx--;
+      playSound('back');
+      render();
+    }
+  });
+
+  skipBtn.addEventListener('click', () => {
+    if(confirm("Kya aap sach me is sawaal ko skip karna chahte hain?")){
+      playSound('skip');
+      answers[idx] = null;
+      idx++;
+      render();
+    }
+  });
+
+  nextBtn.addEventListener('click', () => {
+    if(answers[idx] === null) return;
+    idx++;
+    playSound('next');
+    render();
+  });
+
+  if(answers[idx]!==null){
+    const preSel = quizScreen.querySelector(`.option[data-idx="${answers[idx]}"]`);
+    if(preSel){
+      preSel.classList.add('selected');
+      nextBtn.disabled = false;
+    }
+  }
+}
+function showResult(){
+  const answered = answers.filter(a=>a!==null);
+  let matches = 0;
+  answered.forEach((a,i)=>{
+    if(a === ownerKey[answers.indexOf(a)]) matches++;
+  });
+  // Better counting: loop by index to handle repeat answers properly
+  matches = 0;
+  for(let i=0; i<questions.length; i++){
+    const userAns = answers[i];
+    if(userAns !== null && userAns === ownerKey[i]) matches++;
+  }
+  const answeredCount = answered.length;
+  const totalQs = questions.length;
+  const percent = answeredCount === 0 ? 0 : Math.round((matches / answeredCount) * 100);
+  let badge = "Unique Mix";
+  if(percent >= 80 && answeredCount > 0) badge = "Perfect Sync";
+  else if(percent >= 60 && answeredCount > 0) badge = "Strong Match";
+  else if(percent >= 40 && answeredCount > 0) badge = "Good Vibes";
+
+  quizScreen.innerHTML = `
+    <div class="result-screen" aria-live="polite" aria-atomic="true">
+      <h2>Namaste ${userName}!</h2>
+      <p>Aman Vishwakarma ke saath aapka Best-Friend Match Score hai:</p>
+      <div class="result-percent" role="heading" aria-level="1">${percent}%</div>
+      <div class="badges" role="list">
+        <div class="badge" role="listitem" tabindex="0">${badge}</div>
+        <div class="badge" role="listitem" tabindex="0">${matches} answers matched from ${answeredCount} answered questions</div>
+      </div>
+      <div class="actions" style="justify-content:center; gap:12px; flex-wrap:wrap; margin-top:24px;">
+        <button onclick="shareResult(${percent},${matches})">Share Result</button>
+        <button class="ghost" onclick="showReview()">Review Answers</button>
+        <button onclick="restart()">Restart Quiz</button>
+      </div>
+    </div>
+  `;
+  progressBar.style.display = 'none';
+}
+
+function showReview(){
+  const {percent, matches} = computeResult();
+  let html = `<h2>${userName} ka Quiz Review</h2><p>Score: ${percent}% (${matches}/21 matches)</p>`;
+  html += '<div class="review-list">';
+  for(let i=0;i<questions.length;i++){
+    const sel = answers[i];
+    const ok = ownerKey[i];
+    const mark = (sel === ok) ? "✅" : (sel === null ? "—" : "❌");
+    const selTxt = sel === null ? "Skipped" : `${String.fromCharCode(65+sel)}. ${questions[i].o[sel]}`;
+    const okTxt = `${String.fromCharCode(65+ok)}. ${questions[i].o[ok]}`;
+    html += `
+      <div class="review-item">
+        <div class="review-q">Q${i+1}. ${questions[i].q}</div>
+        <div class="review-ans">
+          <span class="review-mark">${mark}</span>
+          <span class="review-val">Aapka: ${selTxt}</span>
+          <span class="review-val">Aman Vishwakarma: ${okTxt}</span>
+        </div>
+      </div>
+    `;
+  }
+  html += '</div><div style="text-align:center; margin-top:12px;"><button onclick="renderResult()">Back to Result</button></div>';
+  quizScreen.innerHTML = html;
+  progressBar.style.display = 'none';
+}
+function computeResult() {
+  let matches = 0;
+  let answeredCount = 0;
+  for(let i=0; i<questions.length; i++){
+    if(answers[i] !== null){
+      answeredCount++;
+      if(answers[i] === ownerKey[i]) matches++;
+    }
+  }
+  const percent = answeredCount === 0 ? 0 : Math.round((matches / answeredCount) * 100);
+  return {percent, matches, answeredCount};
+}
+function renderResult(){
+  progressBar.style.display = 'none';
+  showResult();
+}
+function restart() {
+  idx = 0;
+  answers.fill(null);
+  userNameInput.value = '';
+  userName = '';
+  quizScreen.style.display = 'none';
+  progressBar.style.display = 'none';
+  welcomeTxt.style.display = 'block';
+  nameLabel.style.display = 'block';
+  userNameInput.style.display = 'block';
+  startBtn.style.display = 'block';
+  startBtn.disabled = true;
+}
+async function shareResult(percent, matches){
+  const text = `${userName} ka Aman Vishwakarma ke saath Best-Friend Match: ${percent}% (${matches} correct answers), from answered questions!`;
+  if(navigator.share){
+    try{
+      await navigator.share({title:"Best-Friend Match Result", text});
+      return;
+    }catch(e){}
+  }
+  try{
+    await navigator.clipboard.writeText(text);
+    alert("Result clipboard me copy kar diya gaya hai!");
+  }catch(e){
+    prompt("Copy your result:", text);
+  }
+}
+userNameInput.focus();
+</script>
+</body>
+</html>
